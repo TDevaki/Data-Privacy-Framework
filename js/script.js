@@ -1,4 +1,4 @@
-    function getTables(){
+function getTables(){
     const tableColumn = document.getElementById("html-column-data");
     tableColumn.innerHTML = "";
 
@@ -139,7 +139,7 @@ function getColumns(){
                 let cell = document.createElement("td");
                 cell.innerText = value;
                 newRow.appendChild(cell);
-                input.value = todo['Column Name'];
+                input.value = todo['Name'];
                 newRow.appendChild(radio);    
             })
             tableColumn.appendChild(newRow);
@@ -149,4 +149,47 @@ function getColumns(){
             }
         });
     }
+}
+
+// Mask the selected column by running glue job
+
+function maskColumn(){
+    var dbradioButtons = document.getElementsByName("dbradio");
+    for (var i = 0; i < dbradioButtons.length; i++) {
+        if (dbradioButtons[i].checked){
+            var selectedDB = dbradioButtons[i].value;
+        }
+    }
+    var radioButton = document.getElementsByName("tbradio");
+    for (var j = 0; j < radioButton.length; j++) {
+        if (radioButton[j].checked){
+            var selectedTable = radioButton[j].value;
+        }
+    }
+    var radioButtons = document.getElementsByName("colradio");
+
+    for(var c=0;c<radioButtons.length;c++){
+        if (radioButtons[c].checked){
+            var columnName = radioButtons[c].value;
+        }
+    }
+
+    var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+selectedTable+"/"+columnName)
+    .then(function(response) {
+        return response.json()
+    })
+    .then(function(data){
+        console.log(data);
+        // getJobRunStatus(data);
+    });
+
+    // function getJobRunStatus(data){
+    //     var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+selectedTable+"/"+data['JobRunId'])
+    //     .then(function(response) {
+    //         return response.json()
+    //     })
+    //     .then(function(status){
+    //         console.log(status);
+    //     });
+    // }
 }

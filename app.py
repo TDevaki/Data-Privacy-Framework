@@ -67,7 +67,7 @@ async def read_tables(request: Request, database:str):
         #         tableClassification = tableParameters["classification"]
         if "Parameters" in tableDict:
             tableParameters = tableDict['Parameters']
-            print(tableParameters)
+            # print(tableParameters)
             if 'table_type' in tableParameters:
                 tableClassification = tableParameters['table_type']
             elif "classification" in tableParameters:
@@ -89,11 +89,15 @@ async def read_tables(request: Request, database:str):
 
         tableInfo.append(data)
     # print(tableList)
+    print("read tables success")
+
     return JSONResponse(tableInfo)
 
 # Read columns
 @app.get("/getColumns/{database}/{table}", response_class=HTMLResponse)  
 async def read_columns(request: Request, database:str, table:str):
+
+    print("read columns")
     colData = []
     colsInfo = []  
     responseGetTables = client.get_tables( DatabaseName = database )
@@ -105,5 +109,31 @@ async def read_columns(request: Request, database:str, table:str):
             columnsDict = tableDict['StorageDescriptor']
             columns = columnsDict['Columns']
             colData.append(columns)
-
+    print("read columns success")
     return JSONResponse(columns)
+
+
+@app.get("/{database}/{table}/{column}",response_class=HTMLResponse)
+async def get_coumn_name(request: Request,database:str, table:str,column:str):
+
+    responseGetTables = client.get_tables( DatabaseName = database )
+    print("get_coumn_name")
+    response = client.start_job_run(
+    JobName= 'glue-hudi',
+    Arguments={
+        'COLUMN_NAME': column
+    }
+    )
+    return JSONResponse(response)
+    
+@app.get("/{database}/{table}/{JobRunId}",response_class=HTMLResponse)
+async def get_coumn_name(request: Request,database:str, table:str,JobRunId:str):
+    responseGetTables = client.get_tables( DatabaseName = database )
+
+    job_status = client.get_job_run(
+    JobName='glue-hudi',
+    RunId=response['JobRunId']
+    )
+    print(job_status)
+    return JSONResponse(job_status)
+
