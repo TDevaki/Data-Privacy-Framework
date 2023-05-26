@@ -1,0 +1,30 @@
+<html>
+<body>
+<div class="row">
+    <div class="col-sm-4" name="db">
+        {% for db in data %}
+        <tr>
+            <!-- <td>{{ db }}</td> -->
+            <input type="radio" name="radio" id="1" autocomplete="off" value="{{ db }}"> {{ db }}
+            
+        </tr>
+        {% endfor %}
+    </div>
+    <br>
+    <button type="button" onclick="displayRadioValue()">
+        Submit
+    </button>
+    <br>
+    <div id="result"></div>
+</div>
+
+<script type="text/javascript">
+    function displayRadioValue(){
+        a = document.querySelector('input[name="radio"]:checked').value;
+        console.log(a, "{{ data }}");
+    }
+    </script>
+
+
+</body>
+</html>

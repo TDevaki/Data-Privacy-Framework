@@ -1,0 +1,172 @@
+* {box-sizing: border-box;}
+
+body { 
+  margin: 0;
+  font-family: 32px Ubuntu;
+  color: black; 
+}
+
+.padding{
+    padding-left:20px;
+
+}
+
+.header {
+  overflow: hidden;
+  padding: 20px 10px;
+}
+
+.header img {
+  float: right;
+  width: 200px;
+  height: 60px;
+  /* background: black; */
+}
+
+.header a {
+  /* float: center; */
+  /* color: #0070AD; */
+  text-align: center;
+  color: black; 
+  padding: 12px;
+  font: 32px Ubuntu;
+  text-decoration: none;
+  /* font-size: 18px;  */
+  line-height: 50px;
+  border-radius: 10px;
+  font-size: 40px;
+  font-weight: bold;
+  /* text-align: center; */
+}
+
+/* .header a.logo {
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+} */
+
+/* .header a:hover {
+  background-color: #ddd;
+  color: black;
+} */
+
+/* .header a.active {
+  background-color: #FFFFFF;/* rgb(5, 42, 79) */
+  /* color: black;
+} */ 
+
+
+
+
+/* Radio Button style  */ /* The container */
+/* The container */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+ 	top: 9px;
+	left: 9px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: white;
+}
+
+/* .sub {
+    background-color: black;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+} */
+
+/* .container-right {
+    float: right;
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  } */
+
+  /* table */
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    width: 30%;
+
+  }
+  
+  td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+

@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Item Details</title>
+    <link href="{{ url_for('static', path='style.css') }}" rel="stylesheet">
+</head>
+<script type="text/javascript">
+    function get_action(form) {
+        form.action = document.querySelector('input[name = "x"]:checked').value;
+    }
+
+</script>
+<body>
+    <h1>Data Masking</h1>
+    <form name = "quoted" method="get" onsubmit="get_action(this);"></form>
+        <!-- <h1>Item ID: {{ id }}</h1> -->
+        <input type="radio" name="x" value="demo.txt" id = "x">
+        <label for="x">{{ databaseName }}</label><br>
+        <input type="radio" name="x" value="demo.txt" id = "x" checked="checked">
+        <label for="x">Database2</label><br>
+        <input id = "submit1" type="submit"><br>
+    </form>
+</body>
+</html>

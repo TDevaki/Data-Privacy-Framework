@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/static/style.css">
+    <script type="text/javascript" src="/js/script.js"></script>  
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    
+
+    
+</head>
+<body>
+<div class="header">
+    <img src="/static/logo.png" alt="logo" />
+  <a >Data Privacy Framework</a>
+  <div class="header-right">
+  </div>
+</div>
+
+<div class="padding">
+  <!-- <h1>Databases</h1> -->
+  <h1 >Please choose a database to see table details</h1>
+</div>
+
+<div class="padding">
+    {% for iname in databases %}
+    <div class="container" >
+        <tr>
+            <label>
+                <input type="radio" name="dbradio" id="iname" value="{{ iname }}"> {{ iname }}
+                <span class="checkmark"></span>
+            </label>
+        </tr>
+    </div>
+    {% endfor %}
+</div>
+<br></br>
+<div class="padding" class="submit">
+    <button class="dbsubmit" onclick="getTables()" name= "dbsubmit" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;">
+        Submit
+    </button>
+</div>
+
+
+<!-- Tables display -->
+
+<br></br>
+<div class="padding" id="data-table">
+    <table id="html-data-table">
+    <div class="container" >
+        <tr>
+            <!-- <th>Table Name</th>
+            <th>Table Type</th>  -->
+        </tr>
+    </div>
+    </table>
+    <br></br>
+    <div class="submit1" id = "getColumns">
+        <button id="getColumnsButton" onclick="getColumns()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px; display: none;">Get Columns</button>
+    </div> 
+</div>
+
+<br></br>
+<div class="padding">
+    <table id="html-column-data">
+    <div class="container" >
+        <tr>
+            <!-- <th>Table Name</th>
+            <th>Table Type</th>  -->
+        </tr>
+    </div>
+    </table>
+    <br></br>
+    <div class="submit" id = "getMasking">
+        <button id="getMaskingButton" onclick="getMasking()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;display: none;">Mask Column</button>
+    </div> 
+</div>
+<br></br>
+
+</body>
+</html>
