@@ -1,4 +1,16 @@
+var selectedDB, selectedTable, columnName;
+
+function clearDB(){
+    const db_div = document.getElementById("database-div");
+    db_div.innerHTML = "";
+}
+function clearTables(){
+    const tb_div = document.getElementById("data-table");
+    tb_div.innerHTML = "";
+}
+
 function getTables(){
+
     const tableColumn = document.getElementById("html-column-data");
     tableColumn.innerHTML = "";
 
@@ -6,7 +18,8 @@ function getTables(){
     // console.log(document.querySelectorAll(radioButtons.checked).length);
     for (var i = 0; i < radioButtons.length; i++) {
         if (radioButtons[i].checked){
-            var selectedDB = radioButtons[i].value;
+            selectedDB = radioButtons[i].value;
+            var dbName = selectedDB;
         }
     }
 
@@ -15,7 +28,7 @@ function getTables(){
     mytable.innerHTML = "";
 
 
-    var res = fetch("http://127.0.0.1:8000/" + selectedDB)
+    var res = fetch("http://127.0.0.1:8000/" + dbName)
     .then(function(response) {
         return response.json()
     })
@@ -73,23 +86,24 @@ function getTables(){
                 }
             });
     }
+
 }
 
 function getColumns(){
 
-    var radioButtons = document.getElementsByName("dbradio");
+    // var radioButtons = document.getElementsByName("dbradio");
     // console.log(document.querySelectorAll(radioButtons.checked).length);
     const getMaskingButton = document.getElementById('getMaskingButton');
 
-    for (var i = 0; i < radioButtons.length; i++) {
-        if (radioButtons[i].checked){
-            var selectedDB = radioButtons[i].value;
-        }
-    }
+    // for (var i = 0; i < radioButtons.length; i++) {
+    //     if (radioButtons[i].checked){
+    //         var selectedDB = radioButtons[i].value;
+    //     }
+    // }
     var radioButton = document.getElementsByName("tbradio");
     for (var j = 0; j < radioButton.length; j++) {
         if (radioButton[j].checked){
-            var selectedTable = radioButton[j].value;
+            selectedTable = radioButton[j].value;
             console.log("Tablename: ",selectedTable);
         }
     }
@@ -154,23 +168,23 @@ function getColumns(){
 // Mask the selected column by running glue job
 
 function maskColumn(){
-    var dbradioButtons = document.getElementsByName("dbradio");
-    for (var i = 0; i < dbradioButtons.length; i++) {
-        if (dbradioButtons[i].checked){
-            var selectedDB = dbradioButtons[i].value;
-        }
-    }
-    var radioButton = document.getElementsByName("tbradio");
-    for (var j = 0; j < radioButton.length; j++) {
-        if (radioButton[j].checked){
-            var selectedTable = radioButton[j].value;
-        }
-    }
+    // var dbradioButtons = document.getElementsByName("dbradio");
+    // for (var i = 0; i < dbradioButtons.length; i++) {
+    //     if (dbradioButtons[i].checked){
+    //         var selectedDB = dbradioButtons[i].value;
+    //     }
+    // }
+    // var radioButton = document.getElementsByName("tbradio");
+    // for (var j = 0; j < radioButton.length; j++) {
+    //     if (radioButton[j].checked){
+    //         var selectedTable = radioButton[j].value;
+    //     }
+    // }
     var radioButtons = document.getElementsByName("colradio");
 
     for(var c=0;c<radioButtons.length;c++){
         if (radioButtons[c].checked){
-            var columnName = radioButtons[c].value;
+            columnName = radioButtons[c].value;
         }
     }
 
@@ -180,16 +194,69 @@ function maskColumn(){
     })
     .then(function(data){
         console.log(data);
-        // getJobRunStatus(data);
-    });
+        // printSampleData();
 
-    // function getJobRunStatus(data){
-    //     var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+selectedTable+"/"+data['JobRunId'])
-    //     .then(function(response) {
-    //         return response.json()
-    //     })
-    //     .then(function(status){
-    //         console.log(status);
-    //     });
+        getJobRunStatus(data);
+    });
+}
+
+
+function getJobRunStatus(data){
+    document.getElementById("response").innerHTML = " " ;
+
+    // var dbradioButtons = document.getElementsByName("dbradio");
+    // for (var i = 0; i < dbradioButtons.length; i++) {
+    //     if (dbradioButtons[i].checked){
+    //         var selectedDB = dbradioButtons[i].value;
+    //     }
     // }
+    // var radioButton = document.getElementsByName("tbradio");
+    // for (var j = 0; j < radioButton.length; j++) {
+    //     if (radioButton[j].checked){
+    //         var selectedTable = radioButton[j].value;
+    //     }
+    // }
+    // printStatus();
+    // var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+data['JobRunId'])
+    // .then(function(response) {
+    //     return response.json()
+    // })
+    // .then(function(status){
+    //     console.log("Status is:",status);
+    //     printStatus(status);
+    // });
+    var interval = setInterval(function() { 
+        var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+data['JobRunId'])
+        .then(function(response) {
+            return response.json()
+        })
+        .then(function(status){
+            console.log("Status is:",status);
+            if (status == "RUNNING") { 
+                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+            }
+            else if (status == "FAILED") { 
+                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+                clearInterval(interval);
+            }
+            else{ 
+                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+                clearInterval(interval);
+                // printSampleData();
+            }
+        });
+    }, 5000);
+    
+}
+
+function printSampleData(){
+    document.getElementById("response").innerHTML = " " ;
+
+    var res = fetch("http://127.0.0.1:8000/printdata/" + selectedDB+'/'+selectedTable)
+        .then(function(response) {
+            return response.json()
+        })
+        .then(function(data){
+            console.log(data);
+        });
 }

@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 
+import boto3
+
 app = FastAPI()
 
 origins = [
@@ -29,6 +31,7 @@ app.add_middleware(
 
 app = FastAPI()
 client = boto3.client('glue',region_name='us-west-1')
+clients = boto3.client('athena',region_name='us-west-1')
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/js", StaticFiles(directory="js"), name="scripts")
@@ -37,7 +40,7 @@ templates = Jinja2Templates(directory="templates")
 
 #Read names
 @app.get("/home", response_class=HTMLResponse)     
-async def read_databases(request: Request):
+def read_databases(request: Request):
     responseGetDatabases = client.get_databases()
     databaseList = responseGetDatabases['DatabaseList']
     databases = []
@@ -48,7 +51,7 @@ async def read_databases(request: Request):
 
 #Read tables 
 @app.get("/{database}", response_class=HTMLResponse)     
-async def read_tables(request: Request, database:str):
+def read_tables(request: Request, database:str):
     tablesData = []
     classifications = []
     tableInfo = []  
@@ -108,8 +111,13 @@ async def read_columns(request: Request, database:str, table:str):
         if tableName == table:
             columnsDict = tableDict['StorageDescriptor']
             columns = columnsDict['Columns']
-            colData.append(columns)
-    print("read columns success")
+            # colData.append(columns)
+
+            for d in columns:
+                if "Parameters" in d.keys():
+                    del d["Parameters"]
+
+    print(columns)
     return JSONResponse(columns)
 
 
@@ -126,14 +134,36 @@ async def get_coumn_name(request: Request,database:str, table:str,column:str):
     )
     return JSONResponse(response)
     
-@app.get("/{database}/{table}/{JobRunId}",response_class=HTMLResponse)
-async def get_coumn_name(request: Request,database:str, table:str,JobRunId:str):
+@app.get("/{database}/{JobRunId}",response_class=HTMLResponse)
+def get_job_run_id(request: Request,JobRunId:str, database:str):
     responseGetTables = client.get_tables( DatabaseName = database )
 
+    print('Running Job')
     job_status = client.get_job_run(
-    JobName='glue-hudi',
-    RunId=response['JobRunId']
+        JobName='glue-hudi',
+        RunId=JobRunId
     )
-    print(job_status)
-    return JSONResponse(job_status)
+    job_status = json.dumps(job_status, indent = 4, sort_keys = True, default = str)
+    data = json.loads(job_status)
 
+    status = data["JobRun"]
+
+    for i in status:
+        if i == "JobRunState":
+            jobStatus =  status[i]
+    print(jobStatus)
+    
+    return JSONResponse(jobStatus)
+
+@app.get("/printdata/{database}/{tablename}",response_class=HTMLResponse)
+async def get_sample_data(request: Request,database:str, tablename:str):
+
+    response = clients.start_query_execution(
+    QueryString = "select * from " + tablename + "limit 5;",
+    ClientRequestToken='string',
+    QueryExecutionContext={
+        'Database': database,
+        }
+    )
+    print(response)
+    return JSONResponse(response)

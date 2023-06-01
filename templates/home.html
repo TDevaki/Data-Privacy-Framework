@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Data Privacy Framework</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="/static/style.css">
@@ -18,10 +20,9 @@
   </div>
 </div>
 
-<div class="padding">
+<div class="padding" id="database-div">
   <!-- <h1>Databases</h1> -->
   <h1 >Please choose a database to see table details</h1>
-</div>
 
 <div class="padding">
     {% for iname in databases %}
@@ -34,18 +35,20 @@
         </tr>
     </div>
     {% endfor %}
+    <br></br>
+    <div class="submit">
+        <button class="dbsubmit" onclick="getTables(), clearDB()" name= "dbsubmit" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;">
+            Submit
+        </button>
+    </div>
 </div>
-<br></br>
-<div class="padding" class="submit">
-    <button class="dbsubmit" onclick="getTables()" name= "dbsubmit" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;">
-        Submit
-    </button>
 </div>
+
 
 
 <!-- Tables display -->
 
-<br></br>
+<!-- <br></br> -->
 <div class="padding" id="data-table">
     <table id="html-data-table">
     <div class="container" >
@@ -57,11 +60,11 @@
     </table>
     <br></br>
     <div class="submit1" id = "getColumns">
-        <button id="getColumnsButton" onclick="getColumns()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px; display: none;">Get Columns</button>
+        <button id="getColumnsButton" onclick="getColumns(), clearTables()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px; display: none;">Get Columns</button>
     </div> 
 </div>
 
-<br></br>
+<!-- <br></br> -->
 <div class="padding">
     <table id="html-column-data">
     <div class="container" >
@@ -75,8 +78,16 @@
     <div class="submit" id = "getMasking">
         <button id="getMaskingButton" onclick="maskColumn()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;display: none;">Mask Column</button>
     </div> 
+    <br></br>
+
+    <p class="padding" id="response"></p>
+
+    <!-- <div class="submit" id = "getJobStatus">
+        <button id="getMaskingButton" onclick="getJobStatus()" style="padding-left: 20px;padding-right: 20px; font-size: 12px; line-height: 25px;display: none;">Mask Column</button>
+    </div>  -->
 </div>
 <br></br>
+
 
 </body>
 </html>
