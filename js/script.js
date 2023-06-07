@@ -1,5 +1,13 @@
 var selectedDB, selectedTable, columnName;
 
+function goBack() {
+    var backButton1 = document.getElementById("backBt");
+    backButton1.style.display = "block";
+}
+function goBackToTable() {
+    var backButton2 = document.getElementById("backBt2");
+    backButton2.style.display = "block";
+}
 function clearDB(){
     const db_div = document.getElementById("database-div");
     db_div.innerHTML = "";
@@ -8,11 +16,14 @@ function clearTables(){
     const tb_div = document.getElementById("data-table");
     tb_div.innerHTML = "";
 }
+function getDatabases(){
+    window.location.href = 'http://127.0.0.1:8000/home';
+}
 
 function getTables(){
 
-    const tableColumn = document.getElementById("html-column-data");
-    tableColumn.innerHTML = "";
+    // const tableColumn = document.getElementById("html-column-data");
+    // tableColumn.innerHTML = "";
 
     var radioButtons = document.getElementsByName("dbradio");
     // console.log(document.querySelectorAll(radioButtons.checked).length);
@@ -144,7 +155,8 @@ function getColumns(){
             let radio = document.createElement("td");
             let input = document.createElement("input");
             input.name="colradio"
-            input.type = "radio";
+            // input.type = "radio";
+            input.type = "checkbox";
             radio.appendChild(input);                                  
             newRow.appendChild(radio);
             
@@ -168,34 +180,25 @@ function getColumns(){
 // Mask the selected column by running glue job
 
 function maskColumn(){
-    // var dbradioButtons = document.getElementsByName("dbradio");
-    // for (var i = 0; i < dbradioButtons.length; i++) {
-    //     if (dbradioButtons[i].checked){
-    //         var selectedDB = dbradioButtons[i].value;
-    //     }
-    // }
-    // var radioButton = document.getElementsByName("tbradio");
-    // for (var j = 0; j < radioButton.length; j++) {
-    //     if (radioButton[j].checked){
-    //         var selectedTable = radioButton[j].value;
-    //     }
-    // }
+    let arr = [];
     var radioButtons = document.getElementsByName("colradio");
 
     for(var c=0;c<radioButtons.length;c++){
         if (radioButtons[c].checked){
-            columnName = radioButtons[c].value;
+            // columnName = radioButtons[c].value;
+            arr.push(radioButtons[c].value);
         }
     }
-
-    var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+selectedTable+"/"+columnName)
+    let strings = arr.join(',');
+    console.log('check box elements ',strings);
+    
+    var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+selectedTable+"/"+strings)
     .then(function(response) {
         return response.json()
     })
     .then(function(data){
         console.log(data);
         // printSampleData();
-
         getJobRunStatus(data);
     });
 }
@@ -203,37 +206,15 @@ function maskColumn(){
 
 function getJobRunStatus(data){
     document.getElementById("response").innerHTML = " " ;
-
-    // var dbradioButtons = document.getElementsByName("dbradio");
-    // for (var i = 0; i < dbradioButtons.length; i++) {
-    //     if (dbradioButtons[i].checked){
-    //         var selectedDB = dbradioButtons[i].value;
-    //     }
-    // }
-    // var radioButton = document.getElementsByName("tbradio");
-    // for (var j = 0; j < radioButton.length; j++) {
-    //     if (radioButton[j].checked){
-    //         var selectedTable = radioButton[j].value;
-    //     }
-    // }
-    // printStatus();
-    // var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+data['JobRunId'])
-    // .then(function(response) {
-    //     return response.json()
-    // })
-    // .then(function(status){
-    //     console.log("Status is:",status);
-    //     printStatus(status);
-    // });
     var interval = setInterval(function() { 
-        var res = fetch("http://127.0.0.1:8000/"+selectedDB+"/"+data['JobRunId'])
+        var res = fetch("http://127.0.0.1:8000/get_job_status/"+selectedDB+"/"+ selectedTable+"/"+data['JobRunId'])
         .then(function(response) {
             return response.json()
         })
         .then(function(status){
             console.log("Status is:",status);
             if (status == "RUNNING") { 
-                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+                document.getElementById("response").innerHTML =`<h2 class="inline">`+"Current job status is " +status+ " "+`<h2 class="loading inline"></h2>` +`</h2>`;
             }
             else if (status == "FAILED") { 
                 document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
@@ -242,21 +223,26 @@ function getJobRunStatus(data){
             else{ 
                 document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
                 clearInterval(interval);
-                // printSampleData();
             }
+
+            if (status == "SUCCEEDED"){
+                printSampleData();
+            } 
         });
-    }, 5000);
-    
+    }, 5000);    
+
 }
 
 function printSampleData(){
     document.getElementById("response").innerHTML = " " ;
 
-    var res = fetch("http://127.0.0.1:8000/printdata/" + selectedDB+'/'+selectedTable)
+    var res = fetch("http://127.0.0.1:8000/get_sample_data/"+ selectedDB+'/'+selectedTable + '/')
         .then(function(response) {
             return response.json()
         })
         .then(function(data){
             console.log(data);
         });
+
+        
 }

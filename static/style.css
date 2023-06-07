@@ -2,18 +2,19 @@
 
 body { 
   margin: 0;
-  font-family: 32px Ubuntu;
+  font-family: "Ubuntu";
   color: black; 
+
 }
 
 .padding{
-    padding-left:20px;
+    padding:20px;
 
 }
 
 .header {
   overflow: hidden;
-  padding: 20px 10px;
+  padding: 50px;
 }
 
 .header img {
@@ -29,7 +30,7 @@ body {
   text-align: center;
   color: black; 
   padding: 12px;
-  font: 32px Ubuntu;
+  font-family: "Ubuntu";
   text-decoration: none;
   /* font-size: 18px;  */
   line-height: 50px;
@@ -147,7 +148,7 @@ body {
   /* table */
 
   table {
-    font-family: arial, sans-serif;
+    font-family: "Ubuntu";
     border-collapse: collapse;
     width: 100%;
   }
@@ -170,3 +171,28 @@ body {
     background-color: #dddddd;
   }
 
+  .loading:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+    animation: ellipsis steps(4, end) 900ms infinite;
+    content: "\2026";
+    /* ascii code for the ellipsis character */
+    width: 0px;
+  }
+  
+  @keyframes ellipsis {
+    to {
+      width: 40px;
+    }
+  }
+  
+  @-webkit-keyframes ellipsis {
+    to {
+      width: 40px;
+    }
+  }
+  .inline {
+    display: inline;
+  }  

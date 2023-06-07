@@ -8,8 +8,8 @@ from botocore.exceptions import ClientError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
+import time
 
-import boto3
 
 app = FastAPI()
 
@@ -31,17 +31,23 @@ app.add_middleware(
 
 app = FastAPI()
 client = boto3.client('glue',region_name='us-west-1')
-clients = boto3.client('athena',region_name='us-west-1')
+athena_client = boto3.client('athena',region_name='us-west-1')
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/js", StaticFiles(directory="js"), name="scripts")
 
 templates = Jinja2Templates(directory="templates")
 
+
+@app.get("/index", response_class=HTMLResponse)
+def index(request: Request):
+    return templates.TemplateResponse("index.html",{"request": request})
+    
 #Read names
 @app.get("/home", response_class=HTMLResponse)     
-def read_databases(request: Request):
+async def read_databases(request: Request):
     responseGetDatabases = client.get_databases()
+
     databaseList = responseGetDatabases['DatabaseList']
     databases = []
     for databaseDict in databaseList:
@@ -51,12 +57,16 @@ def read_databases(request: Request):
 
 #Read tables 
 @app.get("/{database}", response_class=HTMLResponse)     
-def read_tables(request: Request, database:str):
+async def read_tables(request: Request, database:str):
     tablesData = []
     classifications = []
     tableInfo = []  
     responseGetTables = client.get_tables( DatabaseName = database )
+    print("\n****************** Read Tables******************\n")
+
     tableList = responseGetTables['TableList']
+
+    print("\nTable Data\n",responseGetTables)
     for tableDict in tableList:
         tableName = tableDict['Name']
 
@@ -92,15 +102,14 @@ def read_tables(request: Request, database:str):
 
         tableInfo.append(data)
     # print(tableList)
-    print("read tables success")
-
     return JSONResponse(tableInfo)
 
 # Read columns
 @app.get("/getColumns/{database}/{table}", response_class=HTMLResponse)  
 async def read_columns(request: Request, database:str, table:str):
 
-    print("read columns")
+    print("\n****************** Read Columns ******************\n")
+
     colData = []
     colsInfo = []  
     responseGetTables = client.get_tables( DatabaseName = database )
@@ -117,7 +126,6 @@ async def read_columns(request: Request, database:str, table:str):
                 if "Parameters" in d.keys():
                     del d["Parameters"]
 
-    print(columns)
     return JSONResponse(columns)
 
 
@@ -125,7 +133,8 @@ async def read_columns(request: Request, database:str, table:str):
 async def get_coumn_name(request: Request,database:str, table:str,column:str):
 
     responseGetTables = client.get_tables( DatabaseName = database )
-    print("get_coumn_name")
+    print("\n****************** Get Column Name ******************\n")
+
     response = client.start_job_run(
     JobName= 'glue-hudi',
     Arguments={
@@ -134,11 +143,11 @@ async def get_coumn_name(request: Request,database:str, table:str,column:str):
     )
     return JSONResponse(response)
     
-@app.get("/{database}/{JobRunId}",response_class=HTMLResponse)
-def get_job_run_id(request: Request,JobRunId:str, database:str):
+@app.get("/get_job_status/{database}/{table}/{JobRunId}",response_class=HTMLResponse)
+async def get_job_run_id(request: Request,JobRunId:str, database:str, table:str):
     responseGetTables = client.get_tables( DatabaseName = database )
 
-    print('Running Job')
+    print("\n****************** Job Running ******************\n")
     job_status = client.get_job_run(
         JobName='glue-hudi',
         RunId=JobRunId
@@ -151,19 +160,54 @@ def get_job_run_id(request: Request,JobRunId:str, database:str):
     for i in status:
         if i == "JobRunState":
             jobStatus =  status[i]
-    print(jobStatus)
-    
+    # print(jobStatus)
+    # if jobStatus == "SUCCESS":
+    #     response = get_sample_data(database,table)
     return JSONResponse(jobStatus)
+    # return templates.TemplateResponse("home.html", {"request": request, 'jobStatus': jobStatus, 'response': response})
+    # return {'jobStatus': jobStatus, 'response': response}
 
-@app.get("/printdata/{database}/{tablename}",response_class=HTMLResponse)
-async def get_sample_data(request: Request,database:str, tablename:str):
-
-    response = clients.start_query_execution(
-    QueryString = "select * from " + tablename + "limit 5;",
-    ClientRequestToken='string',
+@app.get("/get_sample_data/{db}/{tablename}/",response_class=HTMLResponse)
+async def get_sample_data(request: Request, db:str, tablename:str):
+    print("Table name", tablename)
+    response = athena_client.start_query_execution(
+    QueryString = "select * from " + tablename ,
     QueryExecutionContext={
-        'Database': database,
+        'Database': db,
         }
     )
-    print(response)
-    return JSONResponse(response)
+
+    execution = athena_query(response['QueryExecutionId'])
+    return JSONResponse(execution)
+
+def athena_query(queryExecutionId, max_execution = 5):
+    print("\n****************** Got into athena_query ******************\n")
+    result = []
+    state = 'RUNNING'
+    while max_execution > 0 and state in ['RUNNING', 'QUEUED']:
+        max_execution = max_execution - 1
+
+        response = athena_client.get_query_execution(QueryExecutionId = queryExecutionId)
+
+        if 'QueryExecution' in response and \
+            'Status' in response['QueryExecution'] and \
+            'State' in response['QueryExecution']['Status']:
+            state = response['QueryExecution']['Status']['State']
+            if state == 'FAILED':
+                return False
+            elif state == 'SUCCEEDED': 
+                result = get_result(queryExecutionId)
+        time.sleep(1)
+    return result
+
+
+def get_result(queryExecutionId):
+    print("\n****************** Got into get result method ******************\n")
+    res = athena_client.get_query_results(
+                            QueryExecutionId=queryExecutionId,
+                            MaxResults=5
+                        )
+    if 'ResultSet' in res and 'Rows' in res['ResultSet'] :
+        print("\nResult\n", res['ResultSet']['Rows'])
+        return res['ResultSet']['Rows']
+    

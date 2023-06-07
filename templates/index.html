@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Data Privacy Framework</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/w_style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+<script type="text/javascript" src="/js/script.js"></script> 
+<link rel="shortcut icon" href="/static/favicon.png">
+
+
+<style>
+body, html {height: 100%}
+body,h1,h2,h3,h4,h5,h6 {font-family: "Ubuntu";}
+.menu {display: none}
+.bgimg {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("/static/dp.jpg");
+  min-height: 90%;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top w3-hide-small" style="position: fixed;top: 0;width: 100%;">
+  <div class="w3-bar w3-xlarge w3-white w3-hover-opacity-off" id="myNavbar">
+    <div class="logo" style="float:right;width:200;height:300;"><a href="/"><img src="/static/logo.png" alt="" /></a></div> 
+    <a href="#" class="w3-bar-item w3-button" style="padding: 20px;padding-left: 25px;">Home</a>
+    <a href="#about" class="w3-bar-item w3-button" style="padding: 20px;">About</a>
+  </div>
+</div>
+  
+<!-- Header with image -->
+<header class="bgimg w3-display-container w3-grayscale-min" id="home">
+  <!-- class="w3-display-middle" -->
+  <br><br>
+  <div style="padding-left:25px">
+    <span class="w3-text-white w3-hide-small" style="font-size:60px;text-align: left;"><br>Data Privacy <br>Framework</span>
+    <br></br>
+    <p><a href="#menu" class="w3-button w3-xlarge w3-black w3-center">Explore</a></p>
+  </div>
+</header>
+
+<!-- Menu Container -->
+<div class="w3-container w3-padding-64 w3-xlarge" style="background-color: #f3f3f3;" id="menu">
+<div class="w3-border w3-border-white" style="padding: 100px;background-color: white;" id="menu">
+
+  <div class="w3-content" >
+    <div class="w3-row w3-center">
+      <h2 class="w3-center" style="margin-bottom:64px;font-size: 40px;"><u>Explore Data Privacy</u> </h2>
+        <button href="javascript:void(0)" class="w3-col s4 tablink w3-hover-blue" style="padding:18px;border: 2px solid #0070ad;border-radius:100px;font:1.5rem/1 Ubuntu,Verdana,Arial,sans-serif;margin-right: 1px;margin-left: 5px;" onclick="func()" id="myLink">Tokenization
+          <!-- <div class="w3-col s4 tablink w3-hover-blue" style="background-color:#1167b1;font-size:30px;margin: 1px;">Data Masking</div> -->
+        </button>
+        <button class="w3-col s4 tablink  w3-hover-blue" style="padding:18px;border: 2px solid #0070ad;border-radius:100px;font:1.5rem/1 Ubuntu,Verdana,Arial,sans-serif;margin-right: 1px;" href="javascript:void(0)" onclick="getDatabases();">Data Masking
+          <!-- <div id="content" class="w3-col s4 tablink  w3-hover-blue" style="background-color:#187bcd;font-size:30px;margin: 1px;">Tokenization</div> -->
+        </button>
+        <button class="w3-col s4 tablink  w3-hover-blue" style="padding:18px;border: 2px solid #0070ad;border-radius:100px;font:1.5rem/1 Ubuntu,Verdana,Arial,sans-serif;margin-right: 1px;margin-left: 1px;" href="javascript:void(0)" onclick="func()">Reverse Tokenization
+          <!-- <div class="w3-col s4 tablink  w3-hover-blue" style="background-color:#1167b1;font-size:30px;margin: 1px;">Reverse Tokenization</div> -->
+        </button>
+    </div>
+
+  </div>
+  </div>
+</div>
+
+<!-- About Container -->
+<div class="w3-container w3-padding-64 w3-red w3-grayscale w3-xlarge" style="background-color: #f3f3f3;" id="about">
+    <div class="w3-content" >
+      <h1 class="w3-center" style="margin-bottom:64px;font-size: 40px;line-height: 2px;"><u>About</u></h1>
+      <p style="line-height: 2;">Data privacy, also called information privacy, is an aspect of data protection that addresses the proper storage, access, retention, immutability and security of sensitive data.</p>
+     
+      
+    </div>
+  </div>
+  
+  
+  <!-- Footer -->
+  <footer class="w3-center w3-grey w3-padding-48 w3-xxlarge">
+  </footer>
+  
+<!-- <script>
+// Tabbed Menu
+function openMenu(evt, menuName) {
+  var i, x, tablinks;
+  x = document.getElementsByClassName("menu");
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+     tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+  }
+  document.getElementById(menuName).style.display = "block";
+  evt.currentTarget.firstElementChild.className += " w3-red";
+}
+document.getElementById("myLink").click();
+</script> -->
+
+</body>
+</html>
