@@ -141,6 +141,7 @@ async def get_coumn_name(request: Request,database:str, table:str,column:str):
         'COLUMN_NAME': column
     }
     )
+    print("***** start_job_run *******", response)
     return JSONResponse(response)
     
 @app.get("/get_job_status/{database}/{table}/{JobRunId}",response_class=HTMLResponse)
@@ -194,12 +195,38 @@ def athena_query(queryExecutionId, max_execution = 5):
             'State' in response['QueryExecution']['Status']:
             state = response['QueryExecution']['Status']['State']
             if state == 'FAILED':
+                print("FAILED:", state)
                 return False
             elif state == 'SUCCEEDED': 
                 result = get_result(queryExecutionId)
+                print(queryExecutionId)
         time.sleep(1)
-    return result
 
+    a = result[0]
+    list_res = []
+    d = dict()
+    info_list = []
+    keys = []
+    for i,j in a.items():
+        for i in range(len(j)):
+            for k,v in j[i].items():
+                d[v] = ''
+                keys.append(v)
+        
+    for Data in range(1,len(result)):
+        for key, val in result[Data].items():
+            my_list = []
+            for ind in range(len(val)):
+                for i in val[ind].values():
+                    my_list.append(i)
+        info_list.append(my_list)
+
+    for lists in info_list:
+        dictionary = dict(zip(keys, lists))
+        list_res.append(dictionary)
+
+    print("\n************* Rows that anonymized *************\n", list_res)
+    return list_res
 
 def get_result(queryExecutionId):
     print("\n****************** Got into get result method ******************\n")
@@ -208,6 +235,6 @@ def get_result(queryExecutionId):
                             MaxResults=5
                         )
     if 'ResultSet' in res and 'Rows' in res['ResultSet'] :
-        print("\nResult\n", res['ResultSet']['Rows'])
+        print("\nResult of get_query\n", res['ResultSet']['Rows'])
         return res['ResultSet']['Rows']
     

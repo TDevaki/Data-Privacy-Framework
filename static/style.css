@@ -196,3 +196,32 @@ body {
   .inline {
     display: inline;
   }  
+
+  .alert {
+    font-family: "Ubuntu";
+    border-collapse: collapse;
+    margin: auto;
+    
+    width: 50%;
+    text-align: center;
+    padding: 6px;
+    background-color:white;
+    color: black;
+  }
+  
+  .closebtn {
+    margin-left: 15px;
+    color: white;
+    /* font-weight: bold; */
+    float: right;
+    /* font-size: 10px; */
+    line-height: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .closebtn:hover {
+    color: black;
+  }
+
+ 

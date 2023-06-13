@@ -178,15 +178,24 @@ function getColumns(){
 }
 
 // Mask the selected column by running glue job
-
 function maskColumn(){
     let arr = [];
     var radioButtons = document.getElementsByName("colradio");
 
     for(var c=0;c<radioButtons.length;c++){
         if (radioButtons[c].checked){
-            // columnName = radioButtons[c].value;
-            arr.push(radioButtons[c].value);
+            let text = radioButtons[c].value;
+            if(text.startsWith("_")){
+                alert("Metdata columns are not allowed to Anonymize.Please select other column!");
+                document.getElementById("getMaskingButton").disabled = true;
+            }
+            else{
+                document.getElementById("getMaskingButton").disabled = false;
+                arr.push(radioButtons[c].value);
+            }
+        }
+        else{
+            document.getElementById("getMaskingButton").disabled = true;
         }
     }
     let strings = arr.join(',');
@@ -203,7 +212,6 @@ function maskColumn(){
     });
 }
 
-
 function getJobRunStatus(data){
     document.getElementById("response").innerHTML = " " ;
     var interval = setInterval(function() { 
@@ -213,18 +221,30 @@ function getJobRunStatus(data){
         })
         .then(function(status){
             console.log("Status is:",status);
-            if (status == "RUNNING") { 
-                document.getElementById("response").innerHTML =`<h2 class="inline">`+"Current job status is " +status+ " "+`<h2 class="loading inline"></h2>` +`</h2>`;
-            }
-            else if (status == "FAILED") { 
-                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+            if (status == "SUCCEEDED") { 
+                let alert_box = document.getElementById("response");
+                alert_box.style.display = "block";
+                alert_box.innerHTML =`<h2 style="font-size: 16px;">`+"Current job status is " +status+`<button class="closebtn" onclick="this.parentElement.style.display='none';">&times;</button>` +`</h2>`; +`</h2>` ;
                 clearInterval(interval);
             }
-            else{ 
-                document.getElementById("response").innerHTML =`<h2>`+"Current job status is " +status+`</h2>` ;
+            else if (status == "RUNNING") { 
+                let alert_box = document.getElementById("response");
+                alert_box.style.display = "block";
+                alert_box.innerHTML =`<h2 style="font-size: 16px;" class="inline">`+"Current job status is " +status+ ", please wait! "+`<h2 class="loading inline"></h2>`+`<button class="closebtn" onclick="this.parentElement.style.display='none';">&times;</button>` +`</h2>`;
+            }
+            else if (status == "FAILED") { 
+                let alert_box = document.getElementById("response");
+                alert_box.style.display = "block";
+                alert_box.innerHTML =`<h2 style="font-size: 16px;">`+"Current job status is " +status+", please check! " +`<button class="closebtn" onclick="this.parentElement.style.display='none';">&times;</button>` +`</h2>`; +`</h2>` ;
                 clearInterval(interval);
             }
 
+            else {
+                let alert_box = document.getElementById("response");
+                alert_box.style.display = "block";
+                alert_box.innerHTML =`<h2 style="font-size: 16px;">`+"Current job status is " +status+", please check! " +`<button class="closebtn" onclick="this.parentElement.style.display='none';">&times;</button>` +`</h2>`; +`</h2>` ;
+                clearInterval(interval);
+            }
             if (status == "SUCCEEDED"){
                 printSampleData();
             } 
@@ -234,8 +254,6 @@ function getJobRunStatus(data){
 }
 
 function printSampleData(){
-    document.getElementById("response").innerHTML = " " ;
-
     var res = fetch("http://127.0.0.1:8000/get_sample_data/"+ selectedDB+'/'+selectedTable + '/')
         .then(function(response) {
             return response.json()
@@ -244,5 +262,5 @@ function printSampleData(){
             console.log(data);
         });
 
-        
+    
 }
